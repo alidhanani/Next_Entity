@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+//@ts-ignore
+import { useQuery } from "@apollo/client";
 import client from "../lib/apolloClient";
 import AddEntityModal from "@/components/AddEntityModal";
 import UpdateEntityModal from "@/components/UpdateEntityModal";
@@ -8,8 +9,9 @@ import CompanyTable from "@/components/CompanyTable";
 import ContactTable from "@/components/ContactTable";
 import { Tab } from "@headlessui/react";
 import { GET_ENTITIES } from "@/graphql/queries";
+import { EntityDataType } from "@/service/entity.interface";
 
-function classNames(...classes) {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
@@ -18,12 +20,11 @@ const Home = () => {
     client: client
   });
 
-  const dataList = useUserStore((state) => state.setDataList);
-  const allDataList = useUserStore((state) => state.setAllData);
+  const dataList = useUserStore((state: any) => state.setDataList);
+  const allDataList = useUserStore((state: any) => state.setAllData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [updateData, setUpdateData] = useState("");
-  const didUpdate = useUserStore((state) => state.didAdd);
+  const didUpdate = useUserStore((state: any) => state.didAdd);
 
   useEffect(() => {
     if (data) {
@@ -40,7 +41,7 @@ const Home = () => {
     setIsModalOpen(true);
   };
 
-  const openModalUpdate = (data) => {
+  const openModalUpdate = (data: EntityDataType) => {
     dataList(data);
     setIsUpdateModalOpen(true);
   };
@@ -57,11 +58,13 @@ const Home = () => {
   if (error) return <p>Error: {error.message}</p>;
 
   const companies = data.getEntities.filter(
-    (entity) => entity.__typename === "Company"
+    (entity: EntityDataType) => entity.__typename === "Company"
   );
   const contacts = data.getEntities.filter(
-    (entity) => entity.__typename === "Contact"
+    (entity: EntityDataType) => entity.__typename === "Contact"
   );
+
+  console.log(data.getEntities);
 
   const tabs = ["Company", "Contact"];
 

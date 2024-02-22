@@ -1,34 +1,43 @@
+import { AddEntityForm } from "@/components/AddEntityModal.interface";
 import { EntityInput } from "./EntityInput";
 
-export const EntityForm = ({ entityType, formData, onChange }) => {
+interface EntityFormProps {
+  entityType: "COMPANY" | "CONTACT";
+  formData: AddEntityForm;
+  onChange: any;
+}
+
+export const EntityForm = (props: EntityFormProps) => {
   return (
     <>
-      {entityType === "CONTACT" && (
+      {props.entityType === "CONTACT" && (
         <>
           <EntityInput
             label="Email"
-            value={formData.email}
-            onChange={(value) => onChange("email", value)}
+            value={props.formData.email}
+            onChange={(value: any) => props.onChange("email", value)}
             type="email"
           />
           <EntityInput
             label="Phone"
-            value={formData.phone}
-            onChange={(value) => onChange("phone", value)}
+            value={props.formData.phone}
+            onChange={(value: any) => props.onChange("phone", value)}
+            type={"text"}
           />
         </>
       )}
-      {entityType === "COMPANY" && (
+      {props.entityType === "COMPANY" && (
         <>
           <EntityInput
             label="Industry"
-            value={formData.industry}
-            onChange={(value) => onChange("industry", value)}
+            value={props.formData.industry}
+            onChange={(value: any) => props.onChange("industry", value)}
+            type={"text"}
           />
           <EntityInput
             label="Contact Email"
-            value={formData.contactEmail}
-            onChange={(value) => onChange("contactEmail", value)}
+            value={props.formData.contactEmail}
+            onChange={(value: any) => props.onChange("contactEmail", value)}
             type="email"
           />
         </>

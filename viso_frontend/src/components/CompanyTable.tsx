@@ -1,6 +1,12 @@
+import { EntityDataType } from "@/service/entity.interface";
 import React from "react";
 
-const CompanyTable = ({ companies, openModalUpdate }) => {
+interface CompanyTableProps {
+  companies: EntityDataType[];
+  openModalUpdate: (data: EntityDataType) => void;
+}
+
+const CompanyTable = (props: CompanyTableProps) => {
   return (
     <div className="w-full overflow-x-auto">
       <table className="w-full table-auto border border-gray-200 rounded shadow-md">
@@ -21,7 +27,7 @@ const CompanyTable = ({ companies, openModalUpdate }) => {
           </tr>
         </thead>
         <tbody>
-          {companies.map((company) => (
+          {props.companies.map((company: EntityDataType) => (
             <tr key={company.id} className="border-b border-gray-200">
               <td className="px-6 py-4 whitespace-nowrap">{company.name}</td>
               <td className="px-6 py-4 whitespace-nowrap">
@@ -32,7 +38,7 @@ const CompanyTable = ({ companies, openModalUpdate }) => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <button
-                  onClick={() => openModalUpdate(company)}
+                  onClick={() => props.openModalUpdate(company)}
                   className="text-blue-500 hover:text-blue-600 mr-2"
                 >
                   Edit

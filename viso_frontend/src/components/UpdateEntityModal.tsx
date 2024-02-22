@@ -1,25 +1,37 @@
-import { useEffect, useState } from "react";
-import { useMutation, gql } from "@apollo/client";
+import { FormEvent, useEffect, useState } from "react";
+//@ts-ignore
+import { useMutation } from "@apollo/client";
 import client from "@/lib/apolloClient";
 import useUserStore from "@/service/store";
 import { UPDATE_ENTITY } from "@/graphql/queries";
 import { EntityForm } from "./forms/update/EntityForm";
 import { EntityInput } from "./forms/update/EntityInput";
+import { UpdateEntityForm } from "./UpdateEntityModal.interface";
+import { EntityDataType } from "@/service/entity.interface";
 
-const UpdateEntityModal = ({ isOpen, onClose }) => {
+interface UpdateEntityProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const UpdateEntityModal = (props: UpdateEntityProps) => {
   const [id, setID] = useState();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<UpdateEntityForm>({
     name: "",
     email: "",
     phone: "",
     industry: "",
     contactEmail: ""
   });
-  const [entityType, setEntityType] = useState("CONTACT"); // Default value
-  const didUData = useUserStore((state) => state.dataList);
-  const alLDataList = useUserStore((state) => state.allData);
+  const [entityType, setEntityType] = useState<"COMPANY" | "CONTACT">(
+    "CONTACT"
+  ); // Default value
+  const didUData = useUserStore((state: any) => state.dataList);
+  const alLDataList = useUserStore((state: any) => state.allData);
 
   useEffect(() => {
+    console.log(didUData);
+
     setID(didUData.id);
     setFormData({
       name: didUData.name,
@@ -35,20 +47,20 @@ const UpdateEntityModal = ({ isOpen, onClose }) => {
     client: client
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     // Check if the provided information is the same as the existing data
-    const existingEntry = alLDataList.find((entry) => {
+    const existingEntry = alLDataList.find((entry: EntityDataType) => {
       if (entityType === "CONTACT") {
         return (
-          entry.name === name &&
+          entry.name === formData.name &&
           entry.email === formData.email &&
           entry.phone === formData.phone
         );
       } else if (entityType === "COMPANY") {
         return (
-          entry.name === name &&
+          entry.name === formData.name &&
           entry.industry === formData.industry &&
           entry.contactEmail === formData.contactEmail
         );
@@ -78,19 +90,14 @@ const UpdateEntityModal = ({ isOpen, onClose }) => {
         }
       });
       console.log("Entity updated:", data.updateEntity);
-      onClose();
+      props.onClose();
     } catch (error) {
       console.error("Error updating entity:", error);
     }
   };
 
-  const handleEntityTypeChange = (e) => {
-    const selectedType = e.target.value;
-    setEntityType(selectedType);
-  };
-
   return (
-    isOpen && (
+    props.isOpen && (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
         <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
           <div className="flex justify-between items-center mb-6">
@@ -99,7 +106,7 @@ const UpdateEntityModal = ({ isOpen, onClose }) => {
             </h2>
             <button
               className="text-gray-500 hover:text-gray-600"
-              onClick={onClose}
+              onClick={props.onClose}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -121,29 +128,15 @@ const UpdateEntityModal = ({ isOpen, onClose }) => {
             <EntityInput
               label="Name"
               value={formData.name}
-              onChange={(value) => setFormData({ ...formData, name: value })}
+              onChange={(value: string) =>
+                setFormData({ ...formData, name: value })
+              }
+              type={"text"}
             />
-            <div className="mb-4">
-              <label
-                htmlFor="entityType"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Entity Type
-              </label>
-              <select
-                id="entityType"
-                value={entityType}
-                onChange={handleEntityTypeChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-              >
-                <option value="CONTACT">Contact</option>
-                <option value="COMPANY">Company</option>
-              </select>
-            </div>
             <EntityForm
               entityType={entityType}
               formData={formData}
-              onChange={(key, value) =>
+              onChange={(key: string, value: string) =>
                 setFormData({ ...formData, [key]: value })
               }
             />
